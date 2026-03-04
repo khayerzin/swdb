@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SW Coach HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14;--s1:#0c1120;--s2:#101828;--s3:#162035;
+  --cyan:#00d4ff;--cyan2:#00a3c4;--gold:#f5c842;--red:#ff3d5a;
+  --green:#00e676;--orange:#ff8c00;--blue:#4d9fff;
+  --txt:#c8d8e8;--sub:#4a6070;--border:#1e3040;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px);pointer-events:none;z-index:9999}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.15;pointer-events:none;z-index:0}
+.app{display:flex;height:100vh;position:relative;z-index:1}
+aside{width:210px;min-width:210px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.logo{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+.logo-name{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:3px;color:#fff;text-transform:uppercase}
+.logo-sub{font-size:.65rem;letter-spacing:2px;color:var(--sub);text-transform:uppercase;margin-top:2px}
+.logo-line{width:100%;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);margin-top:10px}
+.nav-section{padding:12px 0 3px 14px;font-size:.6rem;letter-spacing:2.5px;color:var(--sub);text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;color:var(--sub);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:600;letter-spacing:.5px;transition:all .15s;border-left:2px solid transparent;text-transform:uppercase;user-select:none}
+.nav-item:hover{color:var(--txt);background:var(--s2)}
+.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:linear-gradient(90deg,#00d4ff08,transparent)}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:.6rem;font-weight:700;padding:1px 5px;border-radius:8px}
+.sidebar-footer{margin-top:auto;padding:12px 16px;border-top:1px solid var(--border)}
+.exp-bar-label{font-size:.62rem;letter-spacing:1.5px;color:var(--sub);text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between}
+.exp-bar{background:var(--s3);border-radius:2px;height:4px;overflow:hidden}
+.exp-fill{height:100%;background:linear-gradient(90deg,var(--cyan2),var(--cyan));border-radius:2px;transition:width .6s}
+main{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
+.topbar{padding:13px 26px;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:2px;color:#fff;text-transform:uppercase}
+.collab-ticker{background:#ff3d5a12;border:1px solid #ff3d5a35;color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;padding:4px 12px;letter-spacing:1px;animation:flicker 3s infinite}
+@keyframes flicker{0%,98%,100%{opacity:1}99%{opacity:.5}}
+.content{padding:22px 26px;flex:1}
+.page{display:none}.page.active{display:block}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sec-hd h2{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:2.5px;color:#fff;text-transform:uppercase;white-space:nowrap}
+.sec-hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.alert{padding:10px 14px;font-size:.83rem;font-weight:500;margin-bottom:10px;line-height:1.5;border-left:3px solid}
+.alert-red{background:#ff3d5a0a;border-color:var(--red);color:#ff8090}
+.alert-gold{background:#f5c8420a;border-color:var(--gold);color:#f5d870}
+.alert-cyan{background:#00d4ff0a;border-color:var(--cyan);color:#70e8ff}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:20px}
+.stat-card{background:var(--s2);border:1px solid var(--border);padding:14px 16px;position:relative;overflow:hidden;transition:border-color .2s}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.c::before{background:var(--cyan)}.stat-card.g::before{background:var(--gold)}
+.stat-card.r::before{background:var(--red)}.stat-card.gr::before{background:var(--green)}
+.stat-label{font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:7px}
+.stat-value{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:800;line-height:1}
+.stat-card.c .stat-value{color:var(--cyan)}.stat-card.g .stat-value{color:var(--gold)}
+.stat-card.r .stat-value{color:var(--red)}.stat-card.gr .stat-value{color:var(--green)}
+.stat-sub{font-size:.7rem;color:var(--sub);margin-top:4px}
+.prog-block{margin-bottom:12px}
+.prog-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.prog-name{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--txt)}
+.prog-pct{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;color:var(--cyan)}
+.prog-track{background:var(--s3);height:5px;overflow:hidden}
+.prog-fill{height:100%;transition:width .6s ease}
+.pf-c{background:linear-gradient(90deg,var(--cyan2),var(--cyan))}.pf-g{background:linear-gradient(90deg,#c9a030,var(--gold))}
+.pf-o{background:linear-gradient(90deg,#c06000,var(--orange))}.pf-r{background:linear-gradient(90deg,#c42040,var(--red))}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.filt{padding:5px 14px;border:1px solid var(--border);background:transparent;color:var(--sub);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.filt:hover{border-color:var(--txt);color:var(--txt)}
+.filt.on{color:#000}.filt.on.all{border-color:var(--cyan);background:var(--cyan)}
+.filt.on.f1{border-color:var(--green);background:var(--green)}.filt.on.f2{border-color:var(--gold);background:var(--gold)}
+.filt.on.f3{border-color:var(--orange);background:var(--orange)}.filt.on.f4{border-color:var(--red);background:var(--red);color:#fff}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.81rem}
+thead th{background:var(--s1);color:var(--sub);padding:8px 11px;text-align:left;font-size:.63rem;letter-spacing:2px;text-transform:uppercase;white-space:nowrap;border-bottom:1px solid var(--border)}
+tbody tr{border-bottom:1px solid #1e304050;transition:background .1s}
+tbody tr:hover{background:#ffffff03}
+tbody td{padding:8px 11px;vertical-align:middle}
+.tag{display:inline-block;padding:2px 7px;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.tf1{background:#00e67612;color:var(--green);border:1px solid #00e67635}
+.tf2{background:#f5c84212;color:var(--gold);border:1px solid #f5c84235}
+.tf3{background:#ff8c0012;color:var(--orange);border:1px solid #ff8c0035}
+.tf4{background:#ff3d5a12;color:var(--red);border:1px solid #ff3d5a35}
+.turg{background:#ff3d5a18;color:#ff8090;border:1px solid #ff3d5a45}
+.thigh{background:#ff8c0018;color:#ffc060;border:1px solid #ff8c0045}
+.tmed{background:#f5c84212;color:var(--gold);border:1px solid #f5c84235}
+.st-btn{font-size:.95rem;cursor:pointer;padding:3px 6px;transition:all .12s;display:inline-block;user-select:none}
+.st-btn:hover{background:var(--s3);transform:scale(1.2)}
+.cl-list{display:flex;flex-direction:column;gap:4px}
+.cl-item{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--s2);border:1px solid var(--border);cursor:pointer;transition:all .12s;user-select:none}
+.cl-item:hover{border-color:#00d4ff35;background:var(--s3)}
+.cl-item.done{opacity:.38}.cl-item.done .cl-txt{text-decoration:line-through}
+.cl-box{width:15px;height:15px;border:1.5px solid var(--sub);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.62rem;transition:all .12s}
+.cl-item.done .cl-box{background:var(--green);border-color:var(--green);color:#000}
+.cl-txt{font-size:.86rem;font-weight:500;flex:1}
+.cl-meta{font-size:.7rem;color:var(--sub);white-space:nowrap;margin-left:auto;padding-left:8px}
+.btn-sm{padding:6px 14px;background:transparent;border:1px solid var(--border);color:var(--sub);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.btn-sm:hover{border-color:var(--txt);color:var(--txt)}
+.btn-cyan{border-color:var(--cyan);color:var(--cyan)}.btn-cyan:hover{background:var(--cyan);color:#000}
+.btn-gold{border-color:var(--gold);color:var(--gold)}.btn-gold:hover{background:var(--gold);color:#000}
+.btn-red{border-color:var(--red);color:var(--red)}.btn-red:hover{background:var(--red);color:#fff}
+.mon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:10px}
+.mon-card{background:var(--s2);border:1px solid var(--border);padding:13px 15px;transition:all .18s;position:relative}
+.mon-card:hover{border-color:#00d4ff28;transform:translateY(-2px)}
+.mon-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px}
+.mon-name{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:.3px}
+.mon-elem{font-size:.7rem;color:var(--sub);margin-top:1px}
+.tier-badge{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
+.tbsp{color:var(--gold)}.tbs{color:var(--gold)}.tbap{color:var(--cyan)}.tba{color:var(--blue)}.tbb{color:var(--sub)}
+.mon-build{background:var(--s1);padding:6px 9px;font-size:.73rem;color:var(--cyan);font-family:'Barlow Condensed',sans-serif;letter-spacing:.2px;margin-bottom:6px;border-left:2px solid var(--cyan)}
+.mon-use{font-size:.76rem;color:var(--txt);line-height:1.5}
+.mon-footer{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.mon-tag{font-size:.63rem;padding:2px 6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.mt-devil{background:#ff3d5a12;color:var(--red);border:1px solid #ff3d5a35}
+.mt-collab{background:#f5c84212;color:var(--gold);border:1px solid #f5c84235}
+.mt-free{background:#00e67612;color:var(--green);border:1px solid #00e67635}
+.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;margin-bottom:18px}
+.char-card{background:var(--s2);border:1px solid var(--border);padding:13px;display:flex;gap:12px;align-items:center}
+.char-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;background:var(--s3)}
+.char-name{font-family:'Barlow Condensed',sans-serif;font-size:.98rem;font-weight:800;color:#fff;letter-spacing:.3px}
+.char-elem{font-size:.7rem;color:var(--sub);margin-top:1px}
+.char-how{font-size:.72rem;color:var(--cyan);margin-top:5px}
+.char-note{font-size:.7rem;color:var(--sub);margin-top:2px}
+.import-box{background:var(--s2);border:1px solid var(--border);padding:16px;margin-bottom:18px;border-left:3px solid var(--cyan)}
+.import-label{font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+.import-row{display:flex;gap:8px;align-items:flex-start}
+.import-ta{flex:1;background:var(--s1);border:1px solid var(--border);color:var(--txt);padding:9px 12px;font-family:'Barlow',sans-serif;font-size:.82rem;outline:none;resize:vertical;min-height:70px;transition:border-color .15s;line-height:1.5}
+.import-ta:focus{border-color:var(--cyan)}
+.import-ta::placeholder{color:var(--sub)}
+.btn-main{padding:9px 18px;background:var(--cyan);color:#000;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-main:hover{background:#20f0ff}
+.import-msg{margin-top:8px;padding:8px 12px;font-size:.82rem;display:none}
+.import-msg.show{display:block}
+.import-msg.ok{background:#00e67610;border-left:2px solid var(--green);color:var(--green)}
+.import-msg.err{background:#ff3d5a10;border-left:2px solid var(--red);color:var(--red)}
+.rune-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.r-select{background:var(--s2);border:1px solid var(--border);color:var(--txt);padding:6px 9px;font-family:'Barlow',sans-serif;font-size:.8rem;outline:none}
+.r-select:focus{border-color:var(--cyan)}
+.srch{background:var(--s2);border:1px solid var(--border);color:var(--txt);padding:6px 9px;font-family:'Barlow',sans-serif;font-size:.8rem;outline:none;min-width:160px}
+.srch:focus{border-color:var(--cyan)}
+.srch::placeholder{color:var(--sub)}
+.sc-s{color:var(--gold);font-weight:700}.sc-a{color:var(--green);font-weight:700}
+.sc-b{color:var(--cyan);font-weight:600}.sc-c{color:var(--sub)}
+.del-btn{background:transparent;border:1px solid #ff3d5a25;color:#ff3d5a50;cursor:pointer;padding:2px 7px;font-size:.72rem;transition:all .15s;font-family:'Barlow Condensed',sans-serif}
+.del-btn:hover{background:var(--red);border-color:var(--red);color:#fff}
+.div{height:1px;background:linear-gradient(90deg,var(--border),transparent);margin:18px 0}
+.ai-input-row{display:flex;gap:8px}
+.ai-input{flex:1;background:var(--s1);border:1px solid var(--border);color:var(--txt);padding:9px 12px;font-family:'Barlow',sans-serif;font-size:.85rem;outline:none;transition:border-color .15s}
+.ai-input:focus{border-color:var(--cyan)}
+.ai-input::placeholder{color:var(--sub)}
+.ai-response{margin-top:10px;padding:10px 13px;background:var(--s1);border:1px solid var(--border);font-size:.83rem;line-height:1.6;display:none}
+.ai-response.show{display:block}
+.ai-thinking{color:var(--cyan)}
+.view-btn{padding:7px 18px;background:transparent;border:none;color:var(--sub);font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.view-btn.active{background:var(--cyan);color:#000}
+.view-btn:not(.active):hover{color:var(--txt);background:var(--s3)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border)}::-webkit-scrollbar-thumb:hover{background:var(--cyan2)}
+@media(max-width:680px){aside{display:none}.content{padding:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="logo">
+    <div class="logo-name">SW Coach</div>
+    <div class="logo-sub">F2P · Conta Nova 2026</div>
+    <div class="logo-line"></div>
+  </div>
+  <div class="nav-section">Menu</div>
+  <div class="nav-item active" data-page="dash"><span>◈</span>Dashboard</div>
+  <div class="nav-item" data-page="collab"><span>⚔</span>Collab LOTR<span class="nav-badge">!</span></div>
+  <div class="nav-item" data-page="roadmap"><span>◎</span>Roadmap</div>
+  <div class="nav-item" data-page="daily"><span>◷</span>Daily Checklist</div>
+  <div class="nav-item" data-page="runas"><span>◇</span>Runas</div>
+  <div class="nav-item" data-page="mobs"><span>◆</span>Monstros</div>
+  <div class="sidebar-footer">
+    <div class="exp-bar-label"><span>PROGRESSO</span><span id="sb-pct" style="color:var(--cyan)">0%</span></div>
+    <div class="exp-bar"><div class="exp-fill" id="sb-fill" style="width:0%"></div></div>
+  </div>
+</aside>
+<main>
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="collab-ticker" id="collab-ticker">CARREGANDO...</div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dash">
+      <div class="stat-grid" id="dash-stats"></div>
+      <div class="sec-hd"><h2>Progresso por Fase</h2></div>
+      <div id="phase-bars"></div>
+      <div class="div"></div>
+      <div id="dash-alerts"></div>
+    </div>
+
+    <!-- COLLAB -->
+    <div class="page" id="page-collab">
+      <div class="alert alert-red">EXPIRACAO: 31/03/2026 — Faca isso no DIA 1 da conta nova!</div>
+      <div class="alert alert-cyan">Frodo 5 Water GRATIS — ja vem 6 Lv40, skills maxadas, awakened. Complete 10 Frodo Journeys.</div>
+      <div class="sec-hd"><h2>Personagens</h2></div>
+      <div class="char-grid" id="char-grid"></div>
+      <div class="sec-hd"><h2>Checklist da Collab</h2></div>
+      <div class="cl-list" id="cl-collab"></div>
+    </div>
+
+    <!-- ROADMAP -->
+    <div class="page" id="page-roadmap">
+      <div class="filters" id="rm-filters">
+        <button class="filt on all" data-f="all">Todos</button>
+        <button class="filt f1" data-f="F1">Fase 1</button>
+        <button class="filt f2" data-f="F2">Fase 2</button>
+        <button class="filt f3" data-f="F3">Fase 3</button>
+        <button class="filt f4" data-f="F4">End Game</button>
+      </div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Fase</th><th>Prio</th><th>Objetivo</th><th>Descricao</th><th>Recompensa</th><th>Status</th>
+        </tr></thead><tbody id="rm-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- DAILY -->
+    <div class="page" id="page-daily">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <div>
+          <div style="font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:4px">Progresso de Hoje</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="prog-track" style="width:180px"><div class="prog-fill pf-c" id="d-fill" style="width:0%"></div></div>
+            <span id="d-count" style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;color:var(--cyan)">0/0</span>
+          </div>
+        </div>
+        <button class="btn-sm btn-red" onclick="resetDaily()">Resetar Dia</button>
+      </div>
+      <div class="sec-hd"><h2>Sempre (5-10 min)</h2></div>
+      <div class="cl-list" id="cl-always"></div>
+      <div class="sec-hd" style="margin-top:18px"><h2>Combat (60-90 min)</h2></div>
+      <div class="cl-list" id="cl-combat"></div>
+      <div class="sec-hd" style="margin-top:18px"><h2>Verificar Semanalmente</h2></div>
+      <div class="cl-list" id="cl-weekly"></div>
+    </div>
+
+    <!-- RUNAS -->
+    <div class="page" id="page-runas">
+      <div class="import-box">
+        <div class="import-label">Coach IA — envie a foto da runa para analise e insercao automatica</div>
+        <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px">
+          <label class="btn-main" style="cursor:pointer;display:inline-block">
+            Escolher Foto
+            <input type="file" id="rune-img-input" accept="image/*" style="display:none" onchange="runeImageAI(this)">
+          </label>
+          <span id="rune-img-name" style="font-size:.8rem;color:var(--sub);align-self:center">Nenhuma imagem selecionada</span>
+        </div>
+        <div style="margin-bottom:8px">
+          <input class="ai-input" id="rune-ai-input" placeholder='Contexto opcional: ex: "esta runa e para o Veromos"' style="width:100%">
+        </div>
+        <button class="btn-main" id="rune-ai-btn" onclick="runeImageAI()">Analisar e Inserir</button>
+        <div class="ai-response" id="rune-ai-resp"></div>
+        <div class="rune-actions" style="margin-top:10px">
+          <button class="btn-sm btn-cyan" onclick="clearRunas()">Limpar Tudo</button>
+          <button class="btn-sm" onclick="exportCSV()">Baixar CSV</button>
+        </div>
+        <div id="import-msg" class="import-msg"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+        <input class="srch" id="rune-srch" placeholder="Filtrar..." oninput="renderRunes()">
+        <select class="r-select" id="rune-sf" onchange="renderRunes()"><option value="">Todos os Sets</option></select>
+        <select class="r-select" id="rune-scf" onchange="renderRunes()">
+          <option value="">Todos os Scores</option><option>S</option><option>A</option><option>B</option><option>C</option>
+        </select>
+        <span id="rune-total" style="font-family:'Barlow Condensed',sans-serif;font-size:.82rem;color:var(--sub)"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>#</th><th>Set</th><th>Slot</th><th>Str</th><th>+Lv</th><th>Rar</th>
+          <th>Main</th><th>Sub1</th><th>Sub2</th><th>Sub3</th><th>Sub4</th>
+          <th>Equipada</th><th>Score</th><th>Gnd</th><th>Gem</th><th>Obs</th><th></th>
+        </tr></thead><tbody id="rune-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- MOBS -->
+        <!-- MOBS (merged) -->
+    <div class="page" id="page-mobs">
+
+      <!-- GUIA toggle -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;border:1px solid var(--border);overflow:hidden">
+          <button id="view-banco" class="view-btn active" onclick="setView('banco')">Meu Banco</button>
+          <button id="view-guia"  class="view-btn"        onclick="setView('guia')">Guia Meta</button>
+        </div>
+        <span id="mob-total" style="font-family:'Barlow Condensed',sans-serif;font-size:.82rem;color:var(--sub)"></span>
+      </div>
+
+      <!-- BANCO filters -->
+      <div id="banco-controls">
+        <div class="import-box">
+          <div class="import-label">Coach IA — envie a foto do mob para analise e insercao automatica</div>
+          <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px">
+            <label class="btn-main" style="cursor:pointer;display:inline-block">
+              Escolher Foto
+              <input type="file" id="mob-img-input" accept="image/*" style="display:none" onchange="mobImageAI(this)">
+            </label>
+            <span id="mob-img-name" style="font-size:.8rem;color:var(--sub);align-self:center">Nenhuma imagem selecionada</span>
+          </div>
+          <div style="margin-bottom:8px">
+            <input class="ai-input" id="mob-ai-input" placeholder='Contexto opcional: ex: "este e o segundo Roid que tenho"' style="width:100%">
+          </div>
+          <button class="btn-main" id="mob-ai-btn" onclick="mobImageAI()">Analisar e Inserir</button>
+          <div class="ai-response" id="mob-ai-resp"></div>
+          <div class="rune-actions" style="margin-top:10px">
+            <button class="btn-sm btn-red" onclick="clearMobs()">Limpar Tudo</button>
+            <button class="btn-sm" onclick="exportMobsCSV()">Baixar CSV</button>
+          </div>
+          <div id="mobs-msg" class="import-msg"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+          <input class="srch" id="mob-srch"    placeholder="Buscar..." oninput="renderMobsBank()">
+          <select class="r-select" id="mob-elem-f" onchange="renderMobsBank()">
+            <option value="">Todos os Elementos</option>
+            <option>Fire</option><option>Water</option><option>Wind</option><option>Light</option><option>Dark</option>
+          </select>
+          <select class="r-select" id="mob-star-f" onchange="renderMobsBank()">
+            <option value="">Todas as Estrelas</option>
+            <option>5</option><option>4</option><option>3</option><option>2</option>
+          </select>
+          <select class="r-select" id="mob-status-f" onchange="renderMobsBank()">
+            <option value="">Todos os Status</option>
+            <option>Construindo</option><option>Pronto</option><option>Reserva</option><option>Vender</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th>#</th><th>Nome</th><th>Elem</th><th>Nat</th><th>Lv</th><th>Str</th>
+            <th>Awk</th><th>2A</th><th>Skills</th>
+            <th>Rune Set</th><th>SPD</th><th>HP</th><th>ATK</th><th>DEF</th><th>CR%</th><th>CD%</th><th>ACC%</th>
+            <th>Status</th><th>Dvl</th><th>Prio</th><th>Obs</th>
+            <th style="color:var(--gold)">Meta Set</th><th style="color:var(--gold)">Meta Build</th><th style="color:var(--gold)">Gap</th>
+            <th></th>
+          </tr></thead><tbody id="mob-body"></tbody></table>
+        </div>
+      </div>
+
+      <!-- GUIA META -->
+      <div id="guia-controls" style="display:none">
+        <div class="alert alert-gold">Devilmon APENAS em: Veromos, Baretta, Loren, Fran, Nat5 S-tier confirmado. Nunca em farmaveis.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <input class="srch" id="mon-srch"  placeholder="Buscar..." oninput="filterMons()">
+          <select class="r-select" id="mon-tf" onchange="filterMons()">
+            <option value="">Todos os Tiers</option>
+            <option>S+</option><option>S</option><option>A+</option><option>A</option><option>B</option>
+          </select>
+          <select class="r-select" id="mon-ff" onchange="filterMons()">
+            <option value="">Todas as Fases</option>
+            <option>F1</option><option>F2</option><option>F3</option>
+          </select>
+        </div>
+        <div class="mon-grid" id="mon-grid"></div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+</div>
+
+<script>
+var SK = 'sw_hq_v5';
+var S = JSON.parse(localStorage.getItem(SK) || '{}');
+if (!S.rm)    S.rm    = {};
+if (!S.daily) S.daily = {};
+if (!S.collab)S.collab= {};
+if (!S.runas) S.runas = [];
+if (!S.mobs)  S.mobs  = [];
+function save() { localStorage.setItem(SK, JSON.stringify(S)); }
+
+// ════════════════════════════════════════════════════════════════
+// ZONA DE DADOS — editada pelo Coach quando voce manda fotos
+// ════════════════════════════════════════════════════════════════
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+var CHARS = [
+  {icon:'🧝',name:'Frodo',elem:'Water',tier:'B',tc:'b',how:'GRATIS — 10 Frodo Journeys',note:'Ja vem 6 Lv40 max — tier em definicao'},
+  {icon:'🧙',name:'Gandalf',elem:'Todos os elementos',tier:'A',tc:'a',how:'Collab Scroll (gacha)',note:'Fire Gandalf citado em tier PvP'},
+  {icon:'⚔',name:'Aragorn',elem:'Fire / Wind / Water',tier:'S',tc:'s',how:'Collab Scroll (gacha)',note:'Fire Aragorn S/A tier lists fev/2026'},
+  {icon:'🏹',name:'Legolas',elem:'Fire / Wind / Water',tier:'A',tc:'a',how:'Collab Scroll (gacha)',note:'Alta ATK Speed — aguardar reviews'},
+  {icon:'💍',name:'Gollum',elem:'Wind / Water',tier:'B',tc:'b',how:'Collab Scroll (gacha)',note:'NAO gaste Devilmon ainda'},
+];
+
+var COLLAB_CL = [
+  {k:'c0',t:"Frodo Journey 1/10 — Coletar Collab Gift 1x"},
+  {k:'c1',t:"Frodo Journey 2/10 — Usar Energy 50x"},
+  {k:'c2',t:"Frodo Journey 3/10 — Missao Mordor 1x"},
+  {k:'c3',t:"Frodo Journey 4/10 — Vencer Arena 3x"},
+  {k:'c4',t:"Frodo Journey 5/10 — Completar dungeon Cairos 5x"},
+  {k:'c5',t:"Frodo Journey 6/10 — Gandalf Riddle 1x (auto-completa se bug)"},
+  {k:'c6',t:"Frodo Journey 7/10 — Missao Mordor 5x"},
+  {k:'c7',t:"Frodo Journey 8/10 — Summonar 3+ 5x"},
+  {k:'c8',t:"Frodo Journey 9/10 — Land of Shadows"},
+  {k:'c9',t:"FRODO JOURNEY 10/10 — COLETAR FRODO 5 GRATIS!",special:true},
+  {k:'c10',t:"Missoes Mordor diarias — 3/dia (todo dia ate 31/03)"},
+  {k:'c11',t:"Missoes Mordor semanais — Semana 1 (5/semana)"},
+  {k:'c12',t:"Missoes Mordor semanais — Semana 2"},
+  {k:'c13',t:"Missoes Mordor semanais — Semana 3"},
+  {k:'c14',t:"Missoes Mordor semanais — Semana 4"},
+  {k:'c15',t:"Check-in diario com Crystals (Gold Token) — Legy + LD Scroll"},
+  {k:'c16',t:"Milestone de summons — 1 Collab 5 gratis coletado"},
+];
+
+var RM = [
+  {f:'F1',p:'urgent',o:'Criar conta + linkar HIVE imediatamente',d:'Proteger dados antes de tudo.',r:'Seguranca'},
+  {f:'F1',p:'urgent',o:'Missoes Collab LOTR — DIA 1',d:'10 Frodo Journeys = Frodo 6 Lv40 gratis. Mordor diario + semanal ate 31/03.',r:'Frodo 5 MAX gratis'},
+  {f:'F1',p:'urgent',o:'Tutorial + Summoner Way',d:'Runas, energy, mana e pecas de fusao de Veromos/Verdehile incluidas.',r:'Runas + materiais fusao'},
+  {f:'F1',p:'urgent',o:'Lapis Swift+Energy — SPD 200+',d:'EXP farmer principal. Meta: 200+ SPD para solo Faimon Hard.',r:'EXP farm eficiente'},
+  {f:'F1',p:'urgent',o:'Summoner Level 50',d:'Crystals so valem 90 energy max no Lv50. Nao refille antes.',r:'Eficiencia de refill'},
+  {f:'F1',p:'high',o:'Materiais fusao Veromos',d:'Kumae(Dark/seg) Mikene(Water/qua) Argen(Wind/qui) Eintau(Fire/ter)',r:'Veromos pronto'},
+  {f:'F1',p:'high',o:'Todos os Cenarios em Normal',d:'Desbloqueio de conteudo + runas 4 de recompensa.',r:'Runas 4'},
+  {f:'F1',p:'high',o:'Entrar em guild ativa nos primeiros dias',d:'Glory + Guild Points desde o inicio. Rainbowmon semanal.',r:'Weekly resources'},
+  {f:'F1',p:'medium',o:'Arena minima diaria (10+ lutas)',d:'Comprar Rainbowmon sem falta toda semana na Arena Shop.',r:'Glory Points'},
+  {f:'F2',p:'urgent',o:'Fundir Veromos',d:'Reward da fusao = Violent runes gratis. Core de todo time.',r:'Violent runes + lider'},
+  {f:'F2',p:'urgent',o:'GB10 estavel 90%+',d:'Veromos(L) / Belladeon / Shannon / Bernard / Loren ou Fran. SPD 170+.',r:'Runas 6 consistentes'},
+  {f:'F2',p:'urgent',o:'Lapis solo Faimon Hard',d:'Power check das runas.',r:'Acesso runas melhores'},
+  {f:'F2',p:'high',o:'ToA Normal F100',d:'Time GB10 + Baretta. Reset todo mes. F70=Devilmon F100=Legy Scroll.',r:'Legy Scroll + Devilmon'},
+  {f:'F2',p:'high',o:'DB10 — comecar Dragon',d:'Violent runes sao a base de 90% dos builds do jogo.',r:'Violent rune set'},
+  {f:'F2',p:'high',o:'Awaken monstros principais',d:'Veromos > Belladeon > Loren > Fran > Baretta > Verdehile.',r:'Stats melhorados'},
+  {f:'F2',p:'medium',o:'Giants Abyssal Normal (GAN)',d:'Mesmo time GB10. SEM duplicatas. Boss AoE no 7 hit. Skills mudam a cada 6 meses.',r:'Runas + Intangible'},
+  {f:'F3',p:'urgent',o:'DB10 estavel 80%+',d:'Violent para todos. Sem isso o progresso trava.',r:'Violent 6'},
+  {f:'F3',p:'urgent',o:'Dragon Abyssal Normal (DAN)',d:'Sem duplicatas. Boss sazonal. Loren age antes do boss.',r:'Violent + Intangible'},
+  {f:'F3',p:'urgent',o:'ToA Hard F70 minimo',d:'2 Devilmons por mes — recurso mais escasso do jogo.',r:'2 Devilmons/mes'},
+  {f:'F3',p:'high',o:'R5 (Rift Raid Lv5)',d:'Enchanted Gems + Grindstones. Fazer ANTES do NB10.',r:'Rune upgrades'},
+  {f:'F3',p:'high',o:'NB10 — Necropolis',d:'Multi-hits p/ quebrar shield. SPD cap 130 no boss. Will/Rage/Nemesis.',r:'Runas PvP'},
+  {f:'F3',p:'high',o:'Spiritual Realm B10 (SB10)',d:'Novo dungeon RELOADED. Wind boss. Seal Runes: 15% chance Seal.',r:'Seal/Fight/Enhance runes'},
+  {f:'F3',p:'medium',o:'Arena Gold+ consistente',d:'Maximizar Glory Points semanais.',r:'Glory Points max'},
+  {f:'F4',p:'urgent',o:'SF10 + PC10 — Artifacts',d:'Attribute e Type Artifacts. Power spike enorme.',r:'Artifacts'},
+  {f:'F4',p:'urgent',o:'ToA Hard F100',d:'Legy Scroll mensal alem do Devilmon F70.',r:'Legy Scroll + 2 Devilmons'},
+  {f:'F4',p:'high',o:'Necro Abyssal (NAN/NAH)',d:'Boss ressuscita com 50% HP. Burst necessario. Sem duplicatas.',r:'Rage/Will 6 melhores'},
+  {f:'F4',p:'high',o:'Guild Wars + Siege competitivo',d:'Crystals semanais dependem do desempenho.',r:'Crystals semanais'},
+  {f:'F4',p:'medium',o:'RTA Gold+',d:'PvP alto nivel. Time anti-meta com Violent+Will.',r:'Prestigio + rewards'},
+];
+
+var ALWAYS = [
+  {k:'a0',t:'Login + recompensas diarias',m:'2 min'},
+  {k:'a1',t:'Magic Shop — runa com SPD/ATK%/HP%/CD% substat?',m:'cada hora'},
+  {k:'a2',t:'Missoes Mordor LOTR — 3/dia (ate 31/03)',m:'inicio'},
+  {k:'a3',t:'Daily Missions — completar 7/7',m:'17h-18h'},
+  {k:'a4',t:'Arena 10-15 combates',m:'19h-20h'},
+  {k:'a5',t:'Rift Beasts — 3 tentativas',m:'18h'},
+  {k:'a6',t:'Dimension Hole — EXP + mats',m:'18h-19h'},
+];
+var COMBAT = [
+  {k:'b0',t:'Dungeon farming principal em auto-battle',m:'60-90 min'},
+  {k:'b1',t:'Nivelar monstro prioritario (Faimon + Lapis)',m:'20-30 min'},
+  {k:'b2',t:'Trial of Ascension (quando aberto no mes)',m:'primeiras 2 sem'},
+];
+var WEEKLY = [
+  {k:'w0',t:'Comprar Rainbowmon — Arena Shop (PRIORIDADE 1)',m:'sex/sab'},
+  {k:'w1',t:'Comprar Devilmon — Guild Shop (so S-tier!)',m:'sex/sab'},
+  {k:'w2',t:'Craft: 3 Reappraisal + 3 Ancient (Crafting)',m:'segunda'},
+  {k:'w3',t:'Guild Wars — 3 ataques usados',m:'conf. guild'},
+  {k:'w4',t:'Siege — participacao',m:'conf. guild'},
+  {k:'w5',t:'Push Arena antes do reset',m:'domingo'},
+  {k:'w6',t:'Missoes Mordor semanais (ate 31/03)',m:'qualquer'},
+  {k:'w7',t:'Codigo mensal SW resgatado (Discord/site)',m:'D1 do mes'},
+];
+
+var MONS = [
+  {name:'Veromos',elem:'Dark',tier:'S+',tc:'sp',fase:'F1',onde:'Fusao (evento new player)',build:'Despair+Focus | SPD/HP%/HP%',use:'GB10(L), DB10, ToA, GAH, DAH — cleanse passivo todo turno',devil:true},
+  {name:'Lapis',elem:'Water',tier:'S',tc:'s',fase:'F1',onde:'Dada no tutorial',build:'Swift+Energy | SPD/HP%/HP% — 200+ SPD',use:'EXP Farmer Faimon Hard — early MVP absoluta',devil:false},
+  {name:'Belladeon',elem:'Light',tier:'S',tc:'s',fase:'F1',onde:'Secret Dungeon Hall of Light (sex/sab/dom)',build:'Swift+Energy | SPD/HP%/HP%',use:'GB10, DB10, ToA, Arena — Farmavel. NAO use Devilmon.',devil:false},
+  {name:'Shannon',elem:'Wind',tier:'A+',tc:'ap',fase:'F1',onde:"Summoner's Way (gratis)",build:'Swift+Energy | SPD/HP%/HP%',use:'GB10 — Glancing+SPD buff. Temporaria.',devil:false},
+  {name:'Bernard',elem:'Wind',tier:'A+',tc:'ap',fase:'F1',onde:'Secret Dungeon Hall of Wind (qui)',build:'Swift+Energy | SPD/HP%/HP%',use:'GB10 SPD buffer + ATK break. Farmavel.',devil:false},
+  {name:'Baretta',elem:'Fire',tier:'A+',tc:'ap',fase:'F1',onde:'Fusao farmavel',build:'Despair+Focus | SPD/HP%/HP%',use:'ToA essencial, DB10 — DoT+CC. 2A melhora muito.',devil:true},
+  {name:'Loren',elem:'Light',tier:'S',tc:'s',fase:'F2',onde:'Secret Dungeon Hall of Light',build:'Swift+Focus | SPD/HP%/HP% — 65%+ ACC',use:'GB10, DB10, NB10, SB10 — ATK bar drain + Def Break',devil:true},
+  {name:'Fran',elem:'Light',tier:'S',tc:'s',fase:'F2',onde:"Secret Dungeon + Summoner's Way",build:'Swift+Energy | SPD/HP%/HP%',use:'GB10, DB10, PvP — Immunity+Heal. Anti-CC.',devil:true},
+  {name:'Verdehile',elem:'Fire',tier:'S',tc:'s',fase:'F2',onde:'Farmavel (Fire Vampire)',build:'Fatal+Blade | ATK%/CD%/ATK% — 85%+ CR',use:'DB10, DAH — Extra turns ao crit. Core DB10.',devil:false},
+  {name:'Spectra (2A)',elem:'Wind',tier:'A',tc:'a',fase:'F2',onde:'Farmavel via Scenarios',build:'Swift+Focus | SPD/HP%/HP%',use:'ToA, GB10 — Slow + ATK break. 2A obrigatorio.',devil:false},
+  {name:'Kro (2A)',elem:'Dark',tier:'A+',tc:'ap',fase:'F2',onde:'2A Secret Dungeon',build:'Despair+Blade | ATK%/CD%/ATK%',use:'DB10 DPS — 2A obrigatorio.',devil:false},
+  {name:'Khmun',elem:'Light',tier:'A+',tc:'ap',fase:'F3',onde:'Secret Dungeon Hall of Light',build:'Swift+Energy | SPD/HP%/HP%',use:'NB10, PvP — Immunity+ATK bar. Combo com Fran.',devil:false},
+  {name:'Frodo',elem:'Water',tier:'B',tc:'b',fase:'F1',onde:'GRATIS — Collab LOTR (ate 31/03)',build:'A definir — tier em analise',use:'Gratis e ja 6 max. Use e avalie.',devil:false,collab:true},
+];
+
+// ── RUNAS (editado pelo Coach — nao mexa aqui) ───────────────────────────────
+// Para adicionar runas: mande foto no chat e o Coach atualiza este bloco
+var RUNAS_INICIAL = [
+];
+
+// Merge runas do Coach com banco local (sem duplicatas)
+(function(){
+  if (RUNAS_INICIAL.length > 0) {
+    var ids = S.runas.map(function(r){return r._cid||'';});
+    RUNAS_INICIAL.forEach(function(r,i){
+      var cid = 'c_'+i+'_'+r.set+r.slot;
+      if (ids.indexOf(cid) === -1) { r._cid = cid; r.id = Date.now()+i; S.runas.push(r); }
+    });
+    save();
+  }
+})();
+
+// ── MOBS DO JOGADOR (editado pelo Coach — nao mexa aqui) ─────────────────────
+// Para adicionar: mande foto/info no chat e o Coach atualiza este bloco
+var MOBS_INICIAL = [
+  {nome:'Hellhound',elem:'Fire',nat:'2',lv:'1',estrelas:'2',awakened:'N',segundoA:'N',skills:'1',runeSet:'—',spd:'',hp:'',atk:'',def:'',cr:'',cd:'',acc:'',status:'Reserva',devilmon:'0',prioridade:'C',obs:'Provisorio — food futuro quando tivermos mobs prioritarios'},
+  {nome:'Elucia',elem:'Water',nat:'3',lv:'1',estrelas:'3',awakened:'N',segundoA:'N',skills:'1',runeSet:'—',spd:'',hp:'',atk:'',def:'',cr:'',cd:'',acc:'',status:'Construindo',devilmon:'0',prioridade:'B',obs:'Suporte early/mid — cleanse + sleep. Farmavel (SD quarta). Sem Devilmon'},
+  {nome:'Roid',elem:'Wind',nat:'2',lv:'2',estrelas:'2',awakened:'N',segundoA:'N',skills:'1',runeSet:'—',spd:'',hp:'',atk:'',def:'',cr:'',cd:'',acc:'',status:'Construindo',devilmon:'0',prioridade:'B',obs:'Tanque GB10 + GAH. 2A legitimo. Escala com HP'},
+];
+
+(function(){
+  if (MOBS_INICIAL.length > 0) {
+    if (!S.mobs) S.mobs = [];
+    var ids = S.mobs.map(function(m){ return m._cid||''; });
+    MOBS_INICIAL.forEach(function(m, i){
+      var cid = 'mc_'+i+'_'+m.nome+m.elem;
+      if (ids.indexOf(cid) === -1) { m._cid = cid; m.id = Date.now()+i; S.mobs.push(m); }
+    });
+    save();
+  }
+})();
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+var PAGE_TITLES = {dash:'Dashboard',collab:'Collab LOTR',roadmap:'Roadmap',daily:'Daily Checklist',runas:'Runas',mobs:'Monstros'};
+document.querySelectorAll('.nav-item').forEach(function(n) {
+  n.addEventListener('click', function() {
+    document.querySelectorAll('.nav-item').forEach(function(x){x.classList.remove('active');});
+    document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active');});
+    n.classList.add('active');
+    var p = n.dataset.page;
+    document.getElementById('page-'+p).classList.add('active');
+    document.getElementById('topbar-title').textContent = PAGE_TITLES[p] || p;
+  });
+});
+
+// ── COUNTDOWN ─────────────────────────────────────────────────────────────────
+function getDaysLeft() {
+  return Math.max(0, Math.ceil((new Date('2026-03-31') - new Date()) / 864e5));
+}
+document.getElementById('collab-ticker').textContent = 'COLLAB EXPIRA EM ' + getDaysLeft() + ' DIAS';
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function buildDash() {
+  var total = RM.length;
+  var done = 0;
+  for (var i = 0; i < RM.length; i++) { if (S.rm['r'+i] === 'V') done++; }
+  var pct = Math.round(done / total * 100);
+  document.getElementById('sb-pct').textContent = pct + '%';
+  document.getElementById('sb-fill').style.width = pct + '%';
+
+  document.getElementById('dash-stats').innerHTML =
+    '<div class="stat-card c"><div class="stat-label">Progresso Total</div><div class="stat-value">' + pct + '%</div>' +
+    '<div class="prog-track" style="margin-top:8px"><div class="prog-fill pf-c" style="width:' + pct + '%"></div></div></div>' +
+    '<div class="stat-card gr"><div class="stat-label">Objetivos</div><div class="stat-value">' + done + '/' + total + '</div><div class="stat-sub">Roadmap</div></div>' +
+    '<div class="stat-card g"><div class="stat-label">Runas</div><div class="stat-value">' + S.runas.length + '</div><div class="stat-sub">Registradas</div></div>' +
+    '<div class="stat-card c"><div class="stat-label">Mobs no Banco</div><div class="stat-value">' + (S.mobs?S.mobs.length:0) + '</div><div class="stat-sub">Registrados</div></div>' +
+    '<div class="stat-card r"><div class="stat-label">Collab expira em</div><div class="stat-value">' + getDaysLeft() + '</div><div class="stat-sub">dias — 31/03/2026</div></div>';
+
+  var phases = ['F1','F2','F3','F4'];
+  var colors = ['pf-c','pf-g','pf-o','pf-r'];
+  var labels = ['Early Game','Mid Game','Mid-Late','End Game'];
+  var html = '';
+  for (var pi = 0; pi < phases.length; pi++) {
+    var f = phases[pi];
+    var items = RM.filter(function(x){return x.f===f;});
+    var d2 = 0;
+    for (var ii = 0; ii < items.length; ii++) {
+      if (S.rm['r'+RM.indexOf(items[ii])] === 'V') d2++;
+    }
+    var p2 = Math.round(d2/items.length*100);
+    html += '<div class="prog-block"><div class="prog-meta"><span class="prog-name">' + f + ' — ' + labels[pi] + '</span>' +
+            '<span class="prog-pct">' + p2 + '%</span></div>' +
+            '<div class="prog-track"><div class="prog-fill ' + colors[pi] + '" style="width:' + p2 + '%"></div></div></div>';
+  }
+  document.getElementById('phase-bars').innerHTML = html;
+
+  document.getElementById('dash-alerts').innerHTML =
+    '<div class="alert alert-red">PRIORIDADE: Faca as missoes Collab LOTR no DIA 1 — expiram 31/03/2026!</div>' +
+    '<div class="alert alert-gold">Meta: GB10 > DB10+Abyssal > ToA Hard > R5 > NB10 > SB10 > SF10/PC10 > RTA Gold+</div>' +
+    '<div class="alert alert-cyan">RELOADED: B12 removido · Abyssal Normal/Hard · Spiritual Realm B10 · Seal Runes · Intangible · Artifacts</div>';
+}
+
+// ── COLLAB ────────────────────────────────────────────────────────────────────
+function buildCollab() {
+  var html = '';
+  for (var i = 0; i < CHARS.length; i++) {
+    var c = CHARS[i];
+    var tc = c.tc === 's' ? 'tbs' : c.tc === 'a' ? 'tbap' : 'tbb';
+    html += '<div class="char-card"><div class="char-icon">' + c.icon + '</div>' +
+            '<div style="flex:1"><div class="char-name">' + c.name + '</div>' +
+            '<div class="char-elem">' + c.elem + '</div>' +
+            '<div class="char-how">' + c.how + '</div>' +
+            '<div class="char-note">' + c.note + '</div></div>' +
+            '<div class="tier-badge ' + tc + '">' + c.tier + '</div></div>';
+  }
+  document.getElementById('char-grid').innerHTML = html;
+  buildCL('cl-collab', COLLAB_CL, 'collab');
+}
+
+// ── CHECKLISTS ────────────────────────────────────────────────────────────────
+function buildCL(id, items, bank) {
+  var wrap = document.getElementById(id);
+  wrap.innerHTML = '';
+  for (var i = 0; i < items.length; i++) {
+    (function(item) {
+      var done = S[bank][item.k] || false;
+      var div = document.createElement('div');
+      div.className = 'cl-item' + (done ? ' done' : '');
+      if (item.special) div.style.borderColor = '#f5c84240';
+      var boxHtml = '<div class="cl-box">' + (done ? 'V' : '') + '</div>';
+      var metaHtml = item.m ? '<span class="cl-meta">' + item.m + '</span>' : '';
+      div.innerHTML = boxHtml + '<span class="cl-txt">' + item.t + '</span>' + metaHtml;
+      div.onclick = function() {
+        S[bank][item.k] = !S[bank][item.k];
+        save();
+        buildCL(id, items, bank);
+        if (bank === 'daily') updateDailyProg();
+        buildDash();
+      };
+      wrap.appendChild(div);
+    })(items[i]);
+  }
+}
+
+function updateDailyProg() {
+  var all = ALWAYS.concat(COMBAT);
+  var done = 0;
+  for (var i = 0; i < all.length; i++) { if (S.daily[all[i].k]) done++; }
+  var pct = Math.round(done / all.length * 100);
+  document.getElementById('d-fill').style.width = pct + '%';
+  document.getElementById('d-count').textContent = done + '/' + all.length;
+}
+function resetDaily() {
+  if (!confirm('Resetar checklist diario?')) return;
+  var all = ALWAYS.concat(COMBAT);
+  for (var i = 0; i < all.length; i++) { delete S.daily[all[i].k]; }
+  save();
+  buildCL('cl-always', ALWAYS, 'daily');
+  buildCL('cl-combat', COMBAT, 'daily');
+  updateDailyProg();
+}
+
+// ── ROADMAP ───────────────────────────────────────────────────────────────────
+var PTAG = {urgent:'turg',high:'thigh',medium:'tmed'};
+var PLBL = {urgent:'Urgente',high:'Alta',medium:'Media'};
+var FTAG = {F1:'tf1',F2:'tf2',F3:'tf3',F4:'tf4'};
+var STATUS_CYCLE = ['', 'Em progresso', 'Concluido'];
+var STATUS_EMOJI = ['checkbox-empty', 'in-progress', 'done'];
+
+function cycleRM(idx) {
+  var cur = S.rm['r'+idx] || '';
+  S.rm['r'+idx] = cur === '' ? 'P' : cur === 'P' ? 'V' : '';
+  save();
+  renderRM(document.querySelector('.filt.on').dataset.f);
+  buildDash();
+}
+
+function renderRM(filt) {
+  filt = filt || 'all';
+  var body = document.getElementById('rm-body');
+  body.innerHTML = '';
+  for (var i = 0; i < RM.length; i++) {
+    var row = RM[i];
+    if (filt !== 'all' && row.f !== filt) continue;
+    var st = S.rm['r'+i] || '';
+    var emoji = st === 'V' ? '[OK]' : st === 'P' ? '[>>]' : '[ ]';
+    var idx = i;
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><span class="tag ' + FTAG[row.f] + '">' + row.f + '</span></td>' +
+      '<td><span class="tag ' + PTAG[row.p] + '">' + PLBL[row.p] + '</span></td>' +
+      '<td style="font-weight:600;color:#fff;min-width:180px">' + row.o + '</td>' +
+      '<td style="color:var(--sub);font-size:.78rem;min-width:220px">' + row.d + '</td>' +
+      '<td style="color:var(--cyan);font-size:.78rem">' + row.r + '</td>' +
+      '<td><span class="st-btn" title="Clique para marcar">' + emoji + '</span></td>';
+    (function(idx2) {
+      tr.querySelector('.st-btn').onclick = function() { cycleRM(idx2); };
+    })(idx);
+    body.appendChild(tr);
+  }
+}
+
+document.getElementById('rm-filters').addEventListener('click', function(e) {
+  if (!e.target.classList.contains('filt')) return;
+  document.querySelectorAll('.filt').forEach(function(b){b.classList.remove('on');});
+  e.target.classList.add('on');
+  renderRM(e.target.dataset.f);
+});
+
+// ── MONSTERS ──────────────────────────────────────────────────────────────────
+function renderMons(data) {
+  var html = '';
+  for (var i = 0; i < data.length; i++) {
+    var m = data[i];
+    var tc = 'tb' + m.tc;
+    var ftag = m.fase === 'F2' ? 'tf2' : m.fase === 'F3' ? 'tf3' : 'tf1';
+    var tags = '<span class="mon-tag ' + ftag + '">' + m.fase + '</span>';
+    if (m.devil) tags += '<span class="mon-tag mt-devil">Devilmon</span>';
+    if (m.collab) tags += '<span class="mon-tag mt-collab">Collab</span>';
+    if (m.onde.indexOf('GRATIS') !== -1 || m.onde.indexOf('tutorial') !== -1 || m.onde.indexOf("Way") !== -1)
+      tags += '<span class="mon-tag mt-free">Gratis</span>';
+    html +=
+      '<div class="mon-card">' +
+        '<div class="mon-top">' +
+          '<div><div class="mon-name">' + m.name + '</div><div class="mon-elem">' + m.elem + ' — ' + m.onde + '</div></div>' +
+          '<div class="tier-badge ' + tc + '">' + m.tier + '</div>' +
+        '</div>' +
+        '<div class="mon-build">' + m.build + '</div>' +
+        '<div class="mon-use">' + m.use + '</div>' +
+        '<div class="mon-footer">' + tags + '</div>' +
+      '</div>';
+  }
+  document.getElementById('mon-grid').innerHTML = html;
+}
+function filterMons() {
+  var s = document.getElementById('mon-srch').value.toLowerCase();
+  var t = document.getElementById('mon-tf').value;
+  var f = document.getElementById('mon-ff').value;
+  renderMons(MONS.filter(function(m) {
+    return (!s || m.name.toLowerCase().indexOf(s) !== -1 || m.use.toLowerCase().indexOf(s) !== -1) &&
+           (!t || m.tier === t) && (!f || m.fase === f);
+  }));
+}
+
+// ── RUNAS ─────────────────────────────────────────────────────────────────────
+function renderRunes() {
+  var s = (document.getElementById('rune-srch').value || '').toLowerCase();
+  var sf = document.getElementById('rune-sf').value;
+  var scf = document.getElementById('rune-scf').value;
+  var list = S.runas.filter(function(r) {
+    return (!s || JSON.stringify(r).toLowerCase().indexOf(s) !== -1) &&
+           (!sf || r.set === sf) && (!scf || r.score === scf);
+  });
+  document.getElementById('rune-total').textContent = list.length + ' / ' + S.runas.length + ' runas';
+  var body = document.getElementById('rune-body');
+  body.innerHTML = '';
+  var sc = {S:'sc-s',A:'sc-a',B:'sc-b',C:'sc-c'};
+  for (var i = 0; i < list.length; i++) {
+    var r = list[i];
+    var idx = S.runas.indexOf(r);
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="color:var(--sub);font-size:.72rem">' + (idx+1) + '</td>' +
+      '<td style="font-weight:700;color:var(--cyan)">' + (r.set||'—') + '</td>' +
+      '<td style="text-align:center">' + (r.slot||'—') + '</td>' +
+      '<td style="text-align:center">' + (r.star||'—') + '</td>' +
+      '<td style="text-align:center">+' + (r.lvl||0) + '</td>' +
+      '<td style="font-size:.72rem;color:var(--sub)">' + (r.rar||'—') + '</td>' +
+      '<td style="font-weight:600">' + (r.main||'—') + (r.mainval?' ('+r.mainval+')':'') + '</td>' +
+      '<td style="font-size:.78rem">' + (r.s1||'—') + '</td>' +
+      '<td style="font-size:.78rem">' + (r.s2||'—') + '</td>' +
+      '<td style="font-size:.78rem">' + (r.s3||'—') + '</td>' +
+      '<td style="font-size:.78rem">' + (r.s4||'—') + '</td>' +
+      '<td>' + (r.mon||'—') + '</td>' +
+      '<td><span class="' + (sc[r.score]||'sc-c') + '">' + (r.score||'—') + '</span></td>' +
+      '<td style="text-align:center">' + (r.grind?'V':'—') + '</td>' +
+      '<td style="text-align:center">' + (r.gem?'V':'—') + '</td>' +
+      '<td style="color:var(--sub);font-size:.72rem;max-width:100px">' + (r.obs||'—') + '</td>' +
+      '<td><button class="del-btn" data-idx="' + idx + '">X</button></td>';
+    tr.querySelector('.del-btn').onclick = function() {
+      var di = parseInt(this.dataset.idx);
+      if (confirm('Remover runa #' + (di+1) + '?')) { S.runas.splice(di, 1); save(); renderRunes(); buildDash(); }
+    };
+    body.appendChild(tr);
+  }
+  // populate set filter
+  var allSets = [];
+  S.runas.forEach(function(r){ if(r.set && allSets.indexOf(r.set)===-1) allSets.push(r.set); });
+  allSets.sort();
+  var curSF = document.getElementById('rune-sf').value;
+  var sfHtml = '<option value="">Todos os Sets</option>';
+  allSets.forEach(function(s2){ sfHtml += '<option' + (curSF===s2?' selected':'') + '>' + s2 + '</option>'; });
+  document.getElementById('rune-sf').innerHTML = sfHtml;
+}
+
+function showMsg(msg, type) {
+  var el = document.getElementById('import-msg');
+  el.textContent = msg;
+  el.className = 'import-msg show ' + type;
+}
+
+function importJSON() {
+  var raw = document.getElementById('import-ta').value.trim();
+  if (!raw) { showMsg('Cole o JSON antes de importar.', 'err'); return; }
+  try {
+    var data = JSON.parse(raw);
+    var toAdd = [];
+    if (Array.isArray(data)) toAdd = data;
+    else if (data.runas && Array.isArray(data.runas)) toAdd = data.runas;
+    else if (data.set || data.main) toAdd = [data];
+    else throw new Error('Formato nao reconhecido');
+    for (var i = 0; i < toAdd.length; i++) { toAdd[i].id = Date.now() + i; S.runas.push(toAdd[i]); }
+    save(); renderRunes(); buildDash();
+    showMsg(toAdd.length + ' runa(s) importada(s) com sucesso!', 'ok');
+    document.getElementById('import-ta').value = '';
+  } catch(e) {
+    showMsg('JSON invalido: ' + e.message, 'err');
+  }
+}
+
+function exportJSON() {
+  var json = JSON.stringify(S.runas, null, 2);
+  navigator.clipboard.writeText(json).then(function() {
+    showMsg('JSON copiado! Cole no chat para o Coach analisar.', 'ok');
+  }).catch(function() {
+    document.getElementById('import-ta').value = json;
+    showMsg('Cole o conteudo acima do campo de texto para enviar ao Coach.', 'ok');
+  });
+}
+
+function clearRunas() {
+  if (!confirm('Apagar TODAS as runas?')) return;
+  S.runas = []; save(); renderRunes(); buildDash();
+  showMsg('Banco de runas limpo.', 'ok');
+}
+
+function exportCSV() {
+  if (!S.runas.length) { showMsg('Nenhuma runa para exportar.', 'err'); return; }
+  var h = 'Set,Slot,Estrelas,Level,Raridade,Main,MainVal,Sub1,Sub2,Sub3,Sub4,Equipada,Score,Grind,Gem,Obs';
+  var rows = S.runas.map(function(r) {
+    return [r.set,r.slot,r.star,r.lvl,r.rar,r.main,r.mainval,r.s1,r.s2,r.s3,r.s4,r.mon,r.score,r.grind?1:0,r.gem?1:0,r.obs]
+      .map(function(x){ return '"'+(x||'')+'"'; }).join(',');
+  });
+  var csvContent = [h].concat(rows).join('\n');
+  var blob = new Blob([csvContent], {type:'text/csv'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'runas_sw.csv'; a.click();
+}
+
+
+// ── MONSTROS (banco + guia) ───────────────────────────────────────────────────
+function setView(v) {
+  document.getElementById('banco-controls').style.display = v === 'banco' ? 'block' : 'none';
+  document.getElementById('guia-controls').style.display  = v === 'guia'  ? 'block' : 'none';
+  document.getElementById('view-banco').className = 'view-btn' + (v === 'banco' ? ' active' : '');
+  document.getElementById('view-guia').className  = 'view-btn' + (v === 'guia'  ? ' active' : '');
+  if (v === 'guia') filterMons();
+}
+
+function renderMobsBank() {
+  if (!S.mobs) S.mobs = [];
+  var srch  = (document.getElementById('mob-srch').value || '').toLowerCase();
+  var elemF = document.getElementById('mob-elem-f').value;
+  var starF = document.getElementById('mob-star-f').value;
+  var stF   = document.getElementById('mob-status-f').value;
+
+  var list = S.mobs.filter(function(m) {
+    return (!srch  || JSON.stringify(m).toLowerCase().indexOf(srch) !== -1) &&
+           (!elemF || m.elem === elemF) &&
+           (!starF || String(m.estrelas) === starF) &&
+           (!stF   || m.status === stF);
+  });
+
+  document.getElementById('mob-total').textContent = list.length + ' / ' + S.mobs.length + ' mobs';
+  var body = document.getElementById('mob-body');
+  body.innerHTML = '';
+
+  var priColor = {'S+':'color:var(--gold);font-weight:700','S':'color:var(--gold)','A+':'color:var(--cyan)','A':'color:var(--blue)','B':'color:var(--sub)','C':'color:var(--sub)'};
+  var stColor  = {'Pronto':'color:var(--green)','Construindo':'color:var(--orange)','Reserva':'color:var(--sub)','Vender':'color:var(--red)'};
+  var elemColor= {'Fire':'color:#ff6644','Water':'color:#44aaff','Wind':'color:#88cc44','Light':'color:#ffee88','Dark':'color:#cc88ff'};
+
+  for (var i = 0; i < list.length; i++) {
+    var m = list[i];
+    var idx = S.mobs.indexOf(m);
+
+    // Find matching meta entry
+    var meta = null;
+    for (var j = 0; j < MONS.length; j++) {
+      if (MONS[j].name.toLowerCase() === (m.nome||'').toLowerCase()) { meta = MONS[j]; break; }
+    }
+
+    // Build gap analysis
+    var gaps = [];
+    if (meta) {
+      var metaSpd = 170;
+      if (meta.build.indexOf('200') !== -1) metaSpd = 200;
+      if (meta.build.indexOf('85%') !== -1) metaSpd = 0;
+      var curSpd = parseInt(m.spd) || 0;
+      if (metaSpd > 0 && curSpd > 0 && curSpd < metaSpd) gaps.push('SPD ' + curSpd + '/' + metaSpd);
+      if (meta.use.indexOf('ACC') !== -1 && (parseInt(m.acc)||0) < 65) gaps.push('ACC baixo');
+      if (m.awakened !== 'S') gaps.push('Nao awakened');
+      if (meta.devil && m.devilmon === '0') gaps.push('Sem Devilmon');
+    }
+    var gapHtml = gaps.length > 0 ?
+      '<span style="color:var(--red);font-size:.72rem">' + gaps.join(', ') + '</span>' :
+      (meta ? '<span style="color:var(--green);font-size:.72rem">OK</span>' : '<span style="color:var(--sub)">—</span>');
+
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="color:var(--sub);font-size:.72rem">' + (idx+1) + '</td>' +
+      '<td style="font-weight:700;color:#fff">'        + (m.nome||'—') + '</td>' +
+      '<td style="font-size:.8rem;' + (elemColor[m.elem]||'') + '">' + (m.elem||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.nat||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.lv||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.estrelas||'—') + '</td>' +
+      '<td style="text-align:center;color:' + (m.awakened==='S'?'var(--green)':'var(--sub)') + '">' + (m.awakened||'—') + '</td>' +
+      '<td style="text-align:center;color:' + (m.segundoA==='S'?'var(--cyan)':'var(--sub)') + '">'  + (m.segundoA||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.skills||'—') + '</td>' +
+      '<td style="color:var(--cyan);font-size:.78rem">'+ (m.runeSet||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.spd||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.hp||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.atk||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.def||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.cr||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.cd||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.acc||'—') + '</td>' +
+      '<td style="' + (stColor[m.status]||'') + '">'   + (m.status||'—') + '</td>' +
+      '<td style="text-align:center">'                 + (m.devilmon||'—') + '</td>' +
+      '<td style="' + (priColor[m.prioridade]||'') + '">'+ (m.prioridade||'—') + '</td>' +
+      '<td style="color:var(--sub);font-size:.72rem;max-width:80px">' + (m.obs||'—') + '</td>' +
+      '<td style="color:var(--gold);font-size:.75rem">' + (meta ? meta.build.split('|')[0].trim() : '—') + '</td>' +
+      '<td style="color:var(--sub);font-size:.72rem;max-width:90px">' + (meta ? meta.use.split('—')[0].trim() : '—') + '</td>' +
+      '<td>' + gapHtml + '</td>' +
+      '<td><button class="del-btn" data-idx="' + idx + '">X</button></td>';
+    tr.querySelector('.del-btn').onclick = function() {
+      var di = parseInt(this.dataset.idx);
+      if (confirm('Remover ' + (S.mobs[di]||{}).nome + '?')) {
+        S.mobs.splice(di, 1); save(); renderMobsBank(); buildDash();
+      }
+    };
+    body.appendChild(tr);
+  }
+}
+
+function showMobMsg(msg, type) {
+  var el = document.getElementById('mobs-msg');
+  el.textContent = msg;
+  el.className = 'import-msg show ' + type;
+}
+
+
+// ── AI IMAGE HELPERS ─────────────────────────────────────────────────────────
+function fileToBase64(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() { resolve(reader.result.split(',')[1]); };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function setAIState(btnId, respId, state, msg, color) {
+  var btn  = document.getElementById(btnId);
+  var resp = document.getElementById(respId);
+  if (state === 'loading') {
+    btn.disabled = true; btn.textContent = '...';
+    resp.className = 'ai-response show';
+    resp.innerHTML = '<span class="ai-thinking">Analisando imagem...</span>';
+  } else {
+    btn.disabled = false; btn.textContent = 'Analisar e Inserir';
+    resp.className = 'ai-response show';
+    resp.innerHTML = '<span style="color:' + (color||'var(--txt)') + '">' + msg + '</span>';
+  }
+}
+
+async function callClaudeVision(imageB64, mediaType, systemPrompt, userText) {
+  var messages = [{
+    role: 'user',
+    content: [
+      {type: 'image', source: {type: 'base64', media_type: mediaType, data: imageB64}},
+      {type: 'text',  text: userText || 'Analise esta imagem.'}
+    ]
+  }];
+  var res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: messages
+    })
+  });
+  var data = await res.json();
+  var text = (data.content || []).map(function(c){return c.text||'';}).join('').trim();
+  return text.replace(/```json|```/g,'').trim();
+}
+
+async function mobImageAI(inputEl) {
+  var fileInput = document.getElementById('mob-img-input');
+  var file = fileInput.files[0];
+  if (!file) { setAIState('mob-ai-btn','mob-ai-resp','done','Selecione uma imagem primeiro.','var(--red)'); return; }
+
+  document.getElementById('mob-img-name').textContent = file.name;
+  var ctx = document.getElementById('mob-ai-input').value.trim();
+
+  setAIState('mob-ai-btn', 'mob-ai-resp', 'loading');
+
+  try {
+    var b64 = await fileToBase64(file);
+    var mediaType = file.type || 'image/png';
+
+    var existing = S.mobs && S.mobs.length
+      ? 'Banco atual: ' + S.mobs.map(function(m,i){return '#'+(i+1)+' '+m.nome+' '+m.elem;}).join(', ')
+      : 'Banco vazio.';
+
+    var system = 'Voce e o Coach de Summoners War. Analise a imagem do jogo e extraia dados do monstro mostrado.' +
+      ' ' + existing +
+      ' Regras: identifique nome em portugues E nome awakened, elemento, nat estrelas, level, tipo.' +
+      ' Avalie se vale manter (util no roadmap GB10/DB10/ToA/PvP) ou e food.' +
+      ' Se for manter: retorne ADD. Se for food/inutil: retorne SKIP com motivo.' +
+      ' Responda APENAS JSON puro:' +
+      ' ADD: {"action":"ADD","veredicto":"Manter","motivo":"...","mob":{"nome":"NomeAwakened","elem":"Fire|Water|Wind|Light|Dark","nat":"X","lv":"1","estrelas":"X","awakened":"N","segundoA":"N","skills":"1","runeSet":"—","spd":"","hp":"","atk":"","def":"","cr":"","cd":"","acc":"","status":"Construindo","devilmon":"0","prioridade":"S+|S|A+|A|B|C","obs":"..."}}' +
+      ' SKIP: {"action":"SKIP","veredicto":"Food","motivo":"..."}';
+
+    var userMsg = 'Analise este monstro de Summoners War.' + (ctx ? ' Contexto: ' + ctx : '');
+    var raw = await callClaudeVision(b64, mediaType, system, userMsg);
+    var result = JSON.parse(raw);
+
+    if (result.action === 'ADD' && result.mob) {
+      result.mob.id = Date.now();
+      if (!S.mobs) S.mobs = [];
+      S.mobs.push(result.mob);
+      save(); renderMobsBank(); buildDash();
+      setAIState('mob-ai-btn','mob-ai-resp','done',
+        'MANTER: ' + result.mob.nome + ' (' + result.mob.elem + ') adicionado. ' + result.motivo,
+        'var(--green)');
+      fileInput.value = '';
+      document.getElementById('mob-img-name').textContent = 'Nenhuma imagem selecionada';
+    } else {
+      setAIState('mob-ai-btn','mob-ai-resp','done',
+        'FOOD/SKIP: ' + result.motivo, 'var(--red)');
+    }
+  } catch(e) {
+    setAIState('mob-ai-btn','mob-ai-resp','done','Erro: ' + e.message,'var(--red)');
+  }
+}
+
+async function runeImageAI(inputEl) {
+  var fileInput = document.getElementById('rune-img-input');
+  var file = fileInput.files[0];
+  if (!file) { setAIState('rune-ai-btn','rune-ai-resp','done','Selecione uma imagem primeiro.','var(--red)'); return; }
+
+  document.getElementById('rune-img-name').textContent = file.name;
+  var ctx = document.getElementById('rune-ai-input').value.trim();
+
+  setAIState('rune-ai-btn', 'rune-ai-resp', 'loading');
+
+  try {
+    var b64 = await fileToBase64(file);
+    var mediaType = file.type || 'image/png';
+
+    var existing = S.runas && S.runas.length
+      ? 'Runas: ' + S.runas.map(function(r,i){return '#'+(i+1)+' '+r.set+' S'+r.slot+' '+r.main;}).join(', ')
+      : 'Banco vazio.';
+
+    var system = 'Voce e o Coach de Summoners War. Analise a imagem de uma runa do jogo.' +
+      ' ' + existing +
+      ' Extraia: set(Violent/Swift/Despair/Focus/Energy/Fatal/Blade/Will/Nemesis/Revenge/Fight/Determination/Enhance/Accuracy/Tolerance/Seal/Intangible), slot(1-6), star(4-6), lvl(0-15), rar(Magic/Rare/Hero/Legend), main stat, main value, substats(s1-s4 com valores), monstro equipado se visivel.' +
+      ' Avalie score: S(excelente), A(bom), B(medio), C(ruim — descartar).' +
+      ' Regras descarte: slot 2/4/6 com main flat(HP/ATK/DEF sem %) = score C descartar.' +
+      ' Set util: Violent/Swift/Despair/Focus/Fatal/Blade/Will = manter se subs bons.' +
+      ' Responda APENAS JSON:' +
+      ' KEEP: {"action":"KEEP","veredicto":"Manter","motivo":"...","runa":{"set":"...","slot":"2","star":"6","lvl":"0","rar":"Legend","main":"SPD","mainval":"42","s1":"CD+12","s2":"CR+8","s3":"ATK%+7","s4":"","mon":"","score":"S","grind":false,"gem":false,"obs":"..."}}' +
+      ' DISCARD: {"action":"DISCARD","veredicto":"Descartar","motivo":"..."}';
+
+    var userMsg = 'Analise esta runa de Summoners War.' + (ctx ? ' Contexto: ' + ctx : '');
+    var raw = await callClaudeVision(b64, mediaType, system, userMsg);
+    var result = JSON.parse(raw);
+
+    if (result.action === 'KEEP' && result.runa) {
+      result.runa.id = Date.now();
+      S.runas.push(result.runa);
+      save(); renderRunes(); buildDash();
+      setAIState('rune-ai-btn','rune-ai-resp','done',
+        'MANTER: ' + result.runa.set + ' Slot' + result.runa.slot + ' ' + result.runa.main + ' score:' + result.runa.score + '. ' + result.motivo,
+        'var(--green)');
+      fileInput.value = '';
+      document.getElementById('rune-img-name').textContent = 'Nenhuma imagem selecionada';
+    } else {
+      setAIState('rune-ai-btn','rune-ai-resp','done',
+        'DESCARTAR: ' + result.motivo, 'var(--red)');
+    }
+  } catch(e) {
+    setAIState('rune-ai-btn','rune-ai-resp','done','Erro: ' + e.message,'var(--red)');
+  }
+}
+
+async function callClaude(systemPrompt, userMsg, btnId, respId) { return null; }
+async function mobAI() {}
+async function runeAI() {}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildDash();
+buildCollab();
+renderRM('all');
+buildCL('cl-always', ALWAYS, 'daily');
+buildCL('cl-combat', COMBAT, 'daily');
+buildCL('cl-weekly', WEEKLY, 'daily');
+updateDailyProg();
+renderRunes();
+renderMobsBank();
+</script>
+</body>
+</html>
